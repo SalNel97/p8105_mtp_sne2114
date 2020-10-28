@@ -2,6 +2,8 @@
 title: "Midterm"
 author: "Salah El-Sadek (sne2114)"
 output: github_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 
