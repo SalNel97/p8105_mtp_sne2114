@@ -32,7 +32,25 @@ scale_colour_discrete = scale_colour_viridis_d
 scale_fill_discrete = scale_fill_viridis_d
 ```
 
+Problem #1
+
+Import and clean dog weights data set, skipping first header row and omitting notes column. The column type for the column 'date' was changed to numeric then into date format, since 'date' values in excel are custom (numerically coded) formats, not date formats.
+
+```{r read and tidy}
+weights_tidy = 
+  read_excel(
+    "./data/dogweights_07sept2020.xlsx",
+    skip = 1) %>%
+  janitor::clean_names() %>%
+  select(-x6) %>%
+  mutate(
+    date = as.numeric(date),
+    date = as.Date(date, origin = "1899-12-30"))
+```
 
 
 
+```{r}
+ 
+```
 
