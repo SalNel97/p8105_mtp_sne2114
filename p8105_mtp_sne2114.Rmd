@@ -70,3 +70,25 @@ weights_tidy =
    relocate(date, pet_name, weight_lbs, std_lbs, weight_oz, std_oz)
 ```
 
+|      Creating a data frame with only notes and dates they were recorded. Similar method to tidying the weight_tidy data frame.
+
+```{r}
+notes_tidy = 
+  read_excel(
+    "./data/dogweights_07sept2020.xlsx", skip = 1) %>%
+  janitor::clean_names() %>%
+  select(date, x6) %>%
+  mutate(
+    date = as.numeric(date),
+    date = as.Date(date, origin = "1899-12-30")) %>% 
+  rename(notes = x6) %>% 
+  drop_na(notes)
+```
+
+|      Exporting the weights_tidy and notes_tidy data frames.
+
+```{r}
+write_csv(weights_tidy, "./data/weights_df.csv")
+write_csv(notes_tidy, "./data/notes_df.csv")
+```
+
