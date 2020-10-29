@@ -49,7 +49,7 @@ weights_tidy =
     date = as.Date(date, origin = "1899-12-30"))
 ```
 
-|      Used pivot_longer to rearrange weight measurement per pet name. Also helps with not dropping rows with weight data missing from only 1 or 2 pets. Rows with improper dates were also omitted (one row). The weight column containing both pound and ounce weight measurements was separated into pound and ounce columns.Same was done to standard deviation column as well.
+|      Used pivot_longer to rearrange weight measurement per pet name. Also helps with not dropping rows with weight data missing from only 1 or 2 pets. Rows with improper dates were also omitted (one row). The weight column containing weight measurements was separated into lbs and oz, the oz values divided by 16 then summed with the lbs to give a total weight in pounds for each entry .Same was done to standard deviation column as well.
 
 ```{r pivot_longer and drop_na}
 weights_tidy = 
@@ -67,12 +67,18 @@ weights_tidy =
     std,
     into = c("std_lbs", "std_oz"),
     sep = "\\s", extra = "merge") %>% 
-   relocate(date, pet_name, weight_lbs, std_lbs, weight_oz, std_oz) %>% 
   mutate(
     weight_lbs = as.numeric(weight_lbs),
     std_lbs = as.numeric(std_lbs),
     weight_oz = as.numeric(weight_oz),
-    std_oz = as.numeric(std_oz))
+    std_oz = as.numeric(std_oz)) %>% 
+  mutate(
+    weight_oz = weight_oz / 16,
+    std_oz = std_oz / 16,
+    total_weight_lbs = weight_lbs + weight_oz,
+    total_std_lbs = std_lbs + std_oz) %>% 
+  select(date, pet_name, total_weight_lbs, total_std_lbs) %>% 
+  drop_na(total_weight_lbs)
 ```
 
 |      Creating a data frame with only notes and dates they were recorded. Similar method to tidying the weight_tidy data frame.
@@ -109,3 +115,18 @@ n_dates =
 
 Number of unique dates is equal to **`r nrow(n_dates)`**
 
+Constructed a summary table including mean weight, mean standard deviation, and number of observations for each dog. This was done by first grouping by pet name and finding the means for each dog without including any missing values. Summary table was produced using the 'kable' command from the knitr package.
+
+```{r}
+summary_table =
+  weights_tidy %>% 
+    group_by(pet_name) %>% 
+    summarize(
+      n_obs = n(),
+      mean_weight_lbs = mean(total_weight_lbs, na.rm = TRUE),
+      mean_std_lbs = mean(total_std_lbs, na.rm = TRUE))
+```
+
+**Summary Table**
+
+`r knitr::kable(summary_table)`
