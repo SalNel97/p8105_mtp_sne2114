@@ -49,7 +49,7 @@ weights_tidy =
     date = as.Date(date, origin = "1899-12-30"))
 ```
 
-|      Used pivot_longer to rearrange weight measurement per pet name. Also helps with not dropping rows with weight data missing from only 1 or 2 pets. The weight column containing both pound and ounce weight measurements was separated into pound and ounce columns.Same was done to standard deviation column as well.
+|      Used pivot_longer to rearrange weight measurement per pet name. Also helps with not dropping rows with weight data missing from only 1 or 2 pets. Rows with improper dates were also omitted (one row). The weight column containing both pound and ounce weight measurements was separated into pound and ounce columns.Same was done to standard deviation column as well.
 
 ```{r pivot_longer and drop_na}
 weights_tidy = 
@@ -67,12 +67,17 @@ weights_tidy =
     std,
     into = c("std_lbs", "std_oz"),
     sep = "\\s", extra = "merge") %>% 
-   relocate(date, pet_name, weight_lbs, std_lbs, weight_oz, std_oz)
+   relocate(date, pet_name, weight_lbs, std_lbs, weight_oz, std_oz) %>% 
+  mutate(
+    weight_lbs = as.numeric(weight_lbs),
+    std_lbs = as.numeric(std_lbs),
+    weight_oz = as.numeric(weight_oz),
+    std_oz = as.numeric(std_oz))
 ```
 
 |      Creating a data frame with only notes and dates they were recorded. Similar method to tidying the weight_tidy data frame.
 
-```{r}
+```{r notes_df}
 notes_tidy = 
   read_excel(
     "./data/dogweights_07sept2020.xlsx", skip = 1) %>%
@@ -87,8 +92,20 @@ notes_tidy =
 
 |      Exporting the weights_tidy and notes_tidy data frames.
 
-```{r}
+```{r export}
 write_csv(weights_tidy, "./data/weights_df.csv")
 write_csv(notes_tidy, "./data/notes_df.csv")
 ```
+
+### Problem 2
+
+Our weights_tidy data set is ordered by date and includes weight data in both pounds and ounces (and their standard deviations) for each dog by pet_name.Number of unique dates were isolated by creating a new data frame (n_dates) with duplicate dates eliminated then counting the number of rows.
+
+```{r n_dates}
+n_dates = 
+  weights_tidy %>% 
+  distinct(date)
+```
+
+Number of unique dates is equal to **`r nrow(n_dates)`**
 
