@@ -47,6 +47,8 @@ weights_tidy =
   mutate(
     date = as.numeric(date),
     date = as.Date(date, origin = "1899-12-30"))
+
+weights_tidy
 ```
 
 |      Used pivot_longer to rearrange weight measurement per pet name. Also helps with not dropping rows with weight data missing from only 1 or 2 pets. Rows with improper dates were also omitted (one row). The weight column containing weight measurements was separated into lbs and oz, the oz values divided by 16 then summed with the lbs to give a total weight in pounds for each entry .Same was done to standard deviation column as well.
@@ -71,7 +73,12 @@ weights_tidy =
     weight_lbs = as.numeric(weight_lbs),
     std_lbs = as.numeric(std_lbs),
     weight_oz = as.numeric(weight_oz),
-    std_oz = as.numeric(std_oz)) %>% 
+    std_oz = as.numeric(std_oz))
+
+weights_tidy
+
+weights_tidy =
+  weights_tidy %>% 
   mutate(
     weight_oz = weight_oz / 16,
     std_oz = std_oz / 16,
@@ -79,6 +86,8 @@ weights_tidy =
     total_std_lbs = std_lbs + std_oz) %>% 
   select(date, pet_name, total_weight_lbs, total_std_lbs) %>% 
   drop_na(total_weight_lbs)
+
+weights_tidy
 ```
 
 |      Creating a data frame with only notes and dates they were recorded. Similar method to tidying the weight_tidy data frame.
@@ -94,6 +103,8 @@ notes_tidy =
     date = as.Date(date, origin = "1899-12-30")) %>% 
   rename(notes = x6) %>% 
   drop_na(notes)
+
+notes_tidy
 ```
 
 |      Exporting the weights_tidy and notes_tidy data frames.
@@ -111,13 +122,15 @@ write_csv(notes_tidy, "./data/notes_df.csv")
 n_dates = 
   weights_tidy %>% 
   distinct(date)
+
+n_dates
 ```
 
 |      Number of unique dates is equal to **`r nrow(n_dates)`**
 
 |      Constructed a summary table including mean weight, mean standard deviation, and number of observations for each dog. This was done by first grouping by pet name and finding the means for each dog without including any missing values. Summary table was produced using the 'kable' command from the knitr package.
 
-```{r}
+```{r summary}
 summary_table =
   weights_tidy %>% 
     group_by(pet_name) %>% 
@@ -130,3 +143,24 @@ summary_table =
 **Summary Table**
 
 `r knitr::kable(summary_table)`
+
+### Problem 3
+
+|      Constructing a two-panel plot with the left panel showing the weight distribution for each pet, and the right panel showing the distribution of weights of each dog over time.
+
+```{r plots}
+weight_dist_plot =
+  weights_tidy %>% 
+  ggplot(aes(x = total_weight_lbs, fill = pet_name)) +
+  geom_density(alpha = .7, adjust = .7) + 
+  facet_grid(pet_name ~ .)
+
+weight_time_plot =
+  weights_tidy %>% 
+  ggplot(aes(x = date, y = total_weight_lbs, color = pet_name)) + 
+  geom_point(alpha = .5) +
+  geom_smooth(se = FALSE)
+
+weight_dist_plot + weight_time_plot
+```
+
