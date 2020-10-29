@@ -34,9 +34,9 @@ scale_fill_discrete = scale_fill_viridis_d
 
 ### Problem 1
 
-The dog weights dataset includes data on the weights of three pet dogs: Raisin, Simone, and Gagne. Weight was recorded for each pet in pounds and ounces along with the standard deviation for weight measurements and date the pets were weighed. Notes are also included on some dates to explain things such as missing data for any of the pets, for example. The goal is to analyze any trends or changes to each pet's weight as a way to keep track of any potential health issues.
+|      The dog weights dataset includes data on the weights of three pet dogs: Raisin, Simone, and Gagne. Weight was recorded for each pet in pounds and ounces along with the standard deviation for weight measurements and date the pets were weighed. Notes are also included on some dates to explain things such as missing data for any of the pets, for example. The goal is to analyze any trends or changes to each pet's weight as a way to keep track of any potential health issues.
 
-Import and clean dog weights data set, skipping first header row and omitting notes column. The column type for the column 'date' was changed to numeric then into date format, since 'date' values in excel are custom (numerically coded) formats, not date formats.
+|      Import and clean dog weights data set, skipping first header row and omitting notes column. The column type for the column 'date' was changed to numeric then into date format, since 'date' values in excel are custom (numerically coded) formats, not date formats.
 
 ```{r read and tidy}
 weights_tidy = 
@@ -49,9 +49,24 @@ weights_tidy =
     date = as.Date(date, origin = "1899-12-30"))
 ```
 
+|      Used pivot_longer to rearrange weight measurement per pet name. Also helps with not dropping rows with weight data missing from only 1 or 2 pets. The weight column containing both pound and ounce weight measurements was separated into pound and ounce columns.Same was done to standard deviation column as well.
 
-
-```{r pivot_longer}
- 
+```{r pivot_longer and drop_na}
+weights_tidy = 
+  weights_tidy %>% 
+  pivot_longer(
+    raisin:gagne,
+    names_to = "pet_name",
+    values_to = "weight_lbs_oz") %>% 
+  drop_na(weight_lbs_oz) %>% 
+  separate(
+    weight_lbs_oz,
+    into = c("weight_lbs", "weight_oz"),
+    sep = "\\s", extra = "merge") %>% 
+  separate(
+    std,
+    into = c("std_lbs", "std_oz"),
+    sep = "\\s", extra = "merge") %>% 
+   relocate(date, pet_name, weight_lbs, std_lbs, weight_oz, std_oz)
 ```
 
