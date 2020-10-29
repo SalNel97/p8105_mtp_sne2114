@@ -146,21 +146,33 @@ summary_table =
 
 ### Problem 3
 
-|      Constructing a two-panel plot with the left panel showing the weight distribution for each pet, and the right panel showing the distribution of weights of each dog over time.
+|      Constructing a two-panel plot with the left panel showing the weight distribution for each pet in a density plot, and the right panel showing the distribution of weights of each dog over time in a scatter plot.
 
 ```{r plots}
 weight_dist_plot =
   weights_tidy %>% 
   ggplot(aes(x = total_weight_lbs, fill = pet_name)) +
   geom_density(alpha = .7, adjust = .7) + 
+  labs(
+    title = "Weight Distributions per Pet",
+    x = "Weight (lbs)",
+    y = "Density") +
+  scale_x_continuous(
+    breaks = c(8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21)) +
   facet_grid(pet_name ~ .)
 
 weight_time_plot =
   weights_tidy %>% 
   ggplot(aes(x = date, y = total_weight_lbs, color = pet_name)) + 
   geom_point(alpha = .5) +
-  geom_smooth(se = FALSE)
+  geom_smooth(se = FALSE) +
+  labs(
+    title = "Weight Distributions over time",
+    x = "Date (months)",
+    y = "Weight (lbs)")
 
 weight_dist_plot + weight_time_plot
 ```
 
+|      A striking observation is that of how Gagne's weight was in constant decline until Gagne passed away in September of 2019. Raisin and Simone both experienced dips in their weight throughout the year 2019.
+|      Weight distributions for Gagne and Simone were similar and focused around the 10.5 lbs value. While for Raisin, the weight distribution is 'wider' with a focus on weights ranging from 17 to 19 lbs. 
