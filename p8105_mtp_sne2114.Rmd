@@ -105,7 +105,7 @@ write_csv(notes_tidy, "./data/notes_df.csv")
 
 ### Problem 2
 
-Our weights_tidy data set is ordered by date and includes weight data in both pounds and ounces (and their standard deviations) for each dog by pet_name.Number of unique dates were isolated by creating a new data frame (n_dates) with duplicate dates eliminated then counting the number of rows.
+|      Our weights_tidy data set is ordered by date and includes weight data in both pounds and ounces (and their standard deviations) for each dog by pet_name.Number of unique dates were isolated by creating a new data frame (n_dates) with duplicate dates eliminated then counting the number of rows.
 
 ```{r n_dates}
 n_dates = 
@@ -113,9 +113,9 @@ n_dates =
   distinct(date)
 ```
 
-Number of unique dates is equal to **`r nrow(n_dates)`**
+|      Number of unique dates is equal to **`r nrow(n_dates)`**
 
-Constructed a summary table including mean weight, mean standard deviation, and number of observations for each dog. This was done by first grouping by pet name and finding the means for each dog without including any missing values. Summary table was produced using the 'kable' command from the knitr package.
+|      Constructed a summary table including mean weight, mean standard deviation, and number of observations for each dog. This was done by first grouping by pet name and finding the means for each dog without including any missing values. Summary table was produced using the 'kable' command from the knitr package.
 
 ```{r}
 summary_table =
